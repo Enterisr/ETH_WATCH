@@ -7,6 +7,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
+import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -22,12 +29,12 @@ public class CoinapiService {
         this.APIUri = "https://rest-sandbox.coinapi.io/";
     }
 
-    public String GetEthValue() {
+    private String CallAPI(String function) {
         URL url;
         String inputLine;
         try {
 
-            url = new URL(this.APIUri + "v1/trades/latest");
+            url = new URL(this.APIUri + function);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("X-coinAPI-Key", env.getProperty("COINAPI_KEY"));
@@ -49,5 +56,21 @@ public class CoinapiService {
             return "";
         }
 
+    }
+
+    private String DateToISO1806(LocalDateTime d) {
+        DateTimeFormatter tz = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm'Z'");
+        return d.atOffset(ZoneOffset.UTC).format(tz);
+    }
+
+    public String GetEthValue() {
+        return this.CallAPI("v1/exchangerate/ETH/USD");
+    }
+
+    public String GetHistory() {
+        String now = DateToISO1806(LocalDateTime.now());
+        String weekBefore = DateToISO1806(LocalDateTime.now().minus(1, ChronoUnit.WEEKS));
+        return this
+                .CallAPI("v1/exchangerate/ETH/USD/history?time_period_start=" + weekBefore + "&time_period_end=" + now);
     }
 }

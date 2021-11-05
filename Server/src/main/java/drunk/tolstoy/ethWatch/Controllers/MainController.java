@@ -21,4 +21,9 @@ public class MainController {
 
         return coinapiService.GetEthValue();
     }
+
+    @GetMapping("/ethHistory")
+    public String GetEthHistory() {
+        return coinapiService.GetHistory();
+    }
 }
