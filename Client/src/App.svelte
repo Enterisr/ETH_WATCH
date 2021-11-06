@@ -1,9 +1,23 @@
 <script>
-	export let name;
+	import ChartWrap from "./components/ChartWrap.svelte";
+	const data = {
+		labels: ["1", "2", "3", "4"],
+		datasets: [
+			{
+				label: "ETH",
+				data: [1, 2, 3, 4],
+			},
+		],
+	};
 </script>
 
 <main>
 	<h1>ETH_Watch</h1>
+	<article>
+		<section>
+			<ChartWrap {data} />
+		</section>
+	</article>
 </main>
 
 <style>
